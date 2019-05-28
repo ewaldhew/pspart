@@ -2,7 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
-#include <set>
+#include <unordered_set>
 #include <vector>
 #include <random>
 
@@ -21,9 +21,16 @@ using namespace Eigen;
 using Point = VectorXd;
 using Pattern = RowVectorXi;
 
-struct PatternComp {
-    bool operator() (const Pattern & lhs, const Pattern & rhs) {
-        return (lhs.array() < lhs.array()).all();
+struct PatternHasher {
+    std::size_t operator()(const Pattern & ptn) const {
+        using std::size_t;
+
+        size_t seed = 0;
+        for (size_t i = 0; i < ptn.size(); ++i) {
+            seed ^= std::hash<typename Pattern::Scalar>()(ptn[i])
+                    + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        }
+        return seed;
     }
 };
 
@@ -141,7 +148,7 @@ int psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options options = 
 
     /* MCMC-based Parameter Space Partitioning Algorithm */
 
-    std::set<Pattern, PatternComp> foundPatterns;
+    std::unordered_set<Pattern, PatternHasher> foundPatterns;
 
     PSP_Regions regions;
     std::vector<std::pair<time_t, int>> searchTime;
@@ -189,7 +196,7 @@ int psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options options = 
         VectorXd rnd1 = VectorXd::NullaryExpr(nDim, [&]() { return randn(generator); });
         VectorXd rnd2 = pow(rand(generator), 1 / nDim) * rnd1.normalized();
         VectorXd jump = xRange.cwiseProduct(iniJmp * pow(2, regions.optJump[regionIdx]) * rnd2);
-        Point y = regions.xs[regionIdx] + Point(round(jump.array()));
+        Point y = regions.xs[regionIdx] + jump;
         numTrials++;
 
         if ((xMin.array() <= y.array()).all() && (y.array() <= xMax.array()).all()) {
