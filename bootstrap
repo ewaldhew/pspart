@@ -1,0 +1,5 @@
+AUTORECONF=autoreconf
+OTHERFLAGS="--verbose --install --force $ACLOCAL_FLAGS --no-recursive"
+echo "running: $AUTORECONF $OTHERFLAGS"
+$AUTORECONF $OTHERFLAGS \
+  || die "autoreconf failed"
