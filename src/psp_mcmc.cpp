@@ -1,5 +1,4 @@
 #include <cmath>
-#include <iostream>
 #include <stdexcept>
 #include <algorithm>
 #include <unordered_set>
@@ -11,6 +10,7 @@
 #include <time.h>       /* time */
 #define TIME_NOW time(NULL)
 
+#include "debug.h"
 #include "psp_mcmc.h"
 #include <unsupported/Eigen/MatrixFunctions>
 
@@ -133,8 +133,8 @@ PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options opt
     time_t t0 = TIME_NOW;
     int numTrials = 0;
 
-    std::cout << "=================================================================\n"
-                 "PSP SEARCH STARTS...\n\n";
+    DEBUG_LOG("=================================================================\n"
+              "PSP SEARCH STARTS...\n\n");
 
     for (int i = 0; i < x0.cols(); i++) {
         Point y = x0.col(i);
@@ -144,9 +144,9 @@ PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options opt
             regions.push_back({ y, currPtn });
             searchTime.push_back({ TIME_NOW - t0, numTrials });
 
-            std::cout << "New data pattern found: " << currPtn << "\n";
-            std::cout << "w/ supplied starting point(s), Total elapsed time: " <<
-                searchTime.back().first << " secs (" << numTrials << " trials)\n";
+            DEBUG_LOG("New data pattern found: " << currPtn << "\n");
+            DEBUG_LOG("w/ supplied starting point(s), Total elapsed time: " <<
+                searchTime.back().first << " secs (" << numTrials << " trials)\n");
         }
     }
 
@@ -190,9 +190,9 @@ PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options opt
                     iterCount1 = iterCount2 = 0;
                     cnt1 = cnt2 = TIME_NOW;
 
-                    std::cout << "New data pattern found: " << currPtn << "\n";
-                    std::cout << "PSP, Total elapsed time: " <<
-                        searchTime.back().first << " secs (" << numTrials << " trials)\n";
+                    DEBUG_LOG("New data pattern found: " << currPtn << "\n");
+                    DEBUG_LOG("PSP, Total elapsed time: " <<
+                              searchTime.back().first << " secs (" << numTrials << " trials)\n");
                 }
             }
         }
@@ -206,8 +206,8 @@ PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options opt
                 double acrate = regions.alps[regionIdx] / (double)smpSz1;
                 regions.alps[regionIdx] = 0;
 
-                std::cout << "\nLevel 1 adaptation of MCMC in Region #" << regionIdx << '\n'
-                          << "Cycle #" << tmp << ", Acceptance rate: " << acrate << '\n';
+                DEBUG_LOG("\nLevel 1 adaptation of MCMC in Region #" << regionIdx << '\n'
+                          << "Cycle #" << tmp << ", Acceptance rate: " << acrate << '\n');
 
                 if (acrate < .12)
                 {
@@ -241,8 +241,8 @@ PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options opt
                 double acrate = regions.alps[regionIdx] / (double)smpSz2;
                 regions.alps[regionIdx] = 0;
 
-                std::cout << "\nLevel 2 adaptation of MCMC in Region #" << regionIdx << '\n'
-                          << "Cycle #" << tmp << ", Acceptance rate: " << acrate << '\n';
+                DEBUG_LOG("\nLevel 2 adaptation of MCMC in Region #" << regionIdx << '\n'
+                          << "Cycle #" << tmp << ", Acceptance rate: " << acrate << '\n');
 
                 if (acrate < .15) {
                     regions.optJump[regionIdx] = regions.optJump[regionIdx] - .25 / ceil(tmp / 2);
@@ -276,11 +276,11 @@ PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options opt
             double tmp = regions.sampleCount[regionIdx] / (double)smpSz2;
 
             if (regions.sampleCount[regionIdx] == 1) {
-                std::cout << "Adaptation of MCMC in Region #" << regionIdx << " finished.\n";
+                DEBUG_LOG("Adaptation of MCMC in Region #" << regionIdx << " finished.\n");
             } else if (tmp == ceil(tmp)) {
                 double acrate = regions.alps[regionIdx] / (double)regions.sampleCount[regionIdx];
-                std::cout << "\nMonitoring after adaptation in Region #" << regionIdx << '\n'
-                          << "Cycle #" << tmp << ", Acceptance rate (cumulative): " << acrate << '\n';
+                DEBUG_LOG("\nMonitoring after adaptation in Region #" << regionIdx << '\n'
+                          << "Cycle #" << tmp << ", Acceptance rate (cumulative): " << acrate << '\n');
             }
 
             Point lastPoint = regions.xs[regionIdx].back();
@@ -334,12 +334,12 @@ PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options opt
     }
 
     if (options.accurateVolEst) {
-        std::cout << "\nVolume estimation by hit-or-miss method begins...\n";
+        DEBUG_LOG("\nVolume estimation by hit-or-miss method begins...\n");
 
         for (int i = 0; i < regions.size(); i++) {
             int nHit = 0;
 
-            std::cout << "Estimating the volume of Region #" << i << std::endl;
+            DEBUG_LOG("Estimating the volume of Region #" << i << std::endl);
 
             MatrixXd sqrtm = ((nDim + 2) * resultXCovMat[i]).sqrt();
             for (int j = 0; j < vsmpsz; j++) {
@@ -358,15 +358,15 @@ PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options opt
             logvol[i] += log(nHit) - log(vsmpsz);
         }
 
-        std::cout << "...Volume estimation terminated for all regions.\n";
+        DEBUG_LOG("...Volume estimation terminated for all regions.\n");
     }
 
     searchTime.push_back({ TIME_NOW - t0, numTrials });
-    std::cout << "\nPSP SEARCH TERMINATED.\n" \
-                 "TOTAL " << regions.size() << " DATA PATTERNS FOUND.\n" \
-                 "TOTAL " << searchTime.back().first << " secs ("
-                 << numTrials << " trials) ELASPED.\n" \
-                 "=================================================================\n";
+    DEBUG_LOG("\nPSP SEARCH TERMINATED.\n"
+              "TOTAL " << regions.size() << " DATA PATTERNS FOUND.\n"
+              "TOTAL " << searchTime.back().first << " secs ("
+              << numTrials << " trials) ELASPED.\n"
+              "=================================================================\n");
 
     return { std::move(resultPatterns), std::move(resultXs),
              std::move(resultXMean), std::move(resultXCovMat) };
