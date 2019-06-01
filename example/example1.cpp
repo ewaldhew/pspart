@@ -26,12 +26,12 @@ int main()
     Fixed x0[8] = { 0,0,0,0, 65536,65536,65536,65536 };
     Fixed xm[4] = { -65536,-65536,-65536,-65536 };
     Fixed xM[4] = { 65536,65536,65536,65536 };
-    PSP_Get_Regions(hn, &cb, 2, x0, xm, xM);
+    PSP_Get_Regions(hn, &cb, 2, x0, xm, xM, {}, PSP_RESULT_OVERWRITE);
 
-    for (auto& x : hn->psp_regions.resultXs) {
+    for (auto& x : hn->psp_regions.xs) {
         std::cout << x.size() << '\n';
     }std::cout<<std::endl;
-    for (auto& x: hn->psp_regions.resultPatterns) {
+    for (auto& x: hn->psp_regions.patterns) {
         std::cout << x << '\n';
     }
 }

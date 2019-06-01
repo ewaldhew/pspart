@@ -1,7 +1,14 @@
-CC=g++
-CFLAGS=-Wall -pedantic -std=c++11
+LIBTOOL=libtool --mode=link
+CC=gcc
+CXX=g++
+CFLAGS=-Wall -pedantic -Og -DDEBUG
 
-all: example1.out
+INCLUDES = -I../src ../src/libpspart.la
 
-example1.out: example1.cpp ${OBJS}
-	${CC} ${CFLAGS} $< -I../eigen-git-mirror -I../src ../src/*.o -o $@
+all: example1.out example2.out
+
+example1.out: example1.cpp
+	${LIBTOOL} ${CXX} ${CFLAGS} -std=c++11 $< ${INCLUDES} -I../eigen-git-mirror -o $@
+
+example2.out: example2.c
+	${LIBTOOL} ${CC} ${CFLAGS} -std=c99 $< ${INCLUDES} -o $@

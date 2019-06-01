@@ -356,8 +356,28 @@ ASALocalRun/
 *.la
 *.a
 *.lib
+*.pc
 
 # Executables
 *.exe
 *.out
 *.app
+
+.vscode
+
+**/Makefile
+**/Makefile.in
+/aclocal.m4
+/autom4te.cache/
+/config.*
+/configure
+/ar-lib
+/compile
+/depcomp
+/install-sh
+/missing
+/libtool
+/ltmain.sh
+/m4/
+**/.deps/
+**/.libs/

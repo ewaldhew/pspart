@@ -76,9 +76,10 @@ int PSP_Get_Regions(PSP_Handle handle,
                     Fixed *start_points,
                     Fixed *min_coords,
                     Fixed *max_coords,
+                    PSP_Options options,
                     PSP_Result_Mode result_mode)
 {
-    if (!sampling_callback->sampler)
+    if (!handle || !sampling_callback->sampler)
         return EINVAL;
 
     try {
@@ -94,7 +95,7 @@ int PSP_Get_Regions(PSP_Handle handle,
         Eigen::MatrixX2d xb(handle->n_dim, 2);
         xb << map_coord(handle, min_coords), map_coord(handle, max_coords);
 
-        PSP_Result result = psp_mcmc(model, x0, xb);
+        PSP_Result result = psp_mcmc(model, x0, xb, options);
 
         switch (result_mode) {
         default:
@@ -103,10 +104,10 @@ int PSP_Get_Regions(PSP_Handle handle,
             break;
 
         case PSP_RESULT_APPEND:
-            append(handle->psp_regions.resultPatterns, result.resultPatterns);
-            append(handle->psp_regions.resultXs, result.resultXs);
-            append(handle->psp_regions.resultXMean, result.resultXMean);
-            append(handle->psp_regions.resultXCovMat, result.resultXCovMat);
+            append(handle->psp_regions.patterns, result.patterns);
+            append(handle->psp_regions.xs, result.xs);
+            append(handle->psp_regions.xMean, result.xMean);
+            append(handle->psp_regions.xCovMat, result.xCovMat);
             break;
         }
     } catch (...) {
@@ -117,8 +118,19 @@ int PSP_Get_Regions(PSP_Handle handle,
 }
 
 extern "C"
-int PSP_Build_Partitions(PSP_Handle handle)
+int PSP_Build_Partition_KdSVM(PSP_Handle handle,
+                              PSP_KdSVMTree* tree)
 {
+    if (!handle || !tree)
+        return EINVAL;
+
+    try {
+        handle->kdsvm = build_kdsvm(handle->psp_regions);
+        *tree = transform_kdsvm(handle->kdsvm);
+    } catch (...) {
+        return HandleExceptions();
+    }
+
     return 0;
 }
 

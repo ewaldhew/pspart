@@ -94,6 +94,11 @@ struct Regions {
     }
 };
 
+size_t nDim(PSP_Result const& psp_result)
+{
+    return psp_result.xMean.front().rows();
+}
+
 PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options options)
 {
     std::default_random_engine generator(TIME_NOW);
@@ -117,11 +122,11 @@ PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options opt
     int nDim = xBounds.rows();
 
     /* Default values of options */
-    int maxPsp = options.maxPsp < 0 ? 6 : options.maxPsp;
-    double iniJmp = options.iniJmp < 0 ? .1 : options.iniJmp;
-    int smpSz1 = options.smpSz1 < 0 ? ceil(100 * pow(1.2, nDim)) : options.smpSz1;
-    int smpSz2 = options.smpSz2 < 0 ? ceil(200 * pow(1.2, nDim)) : options.smpSz2;
-    int vsmpsz = options.vsmpsz < 0 ? ceil(500 * pow(1.2, nDim)) : options.vsmpsz;
+    int maxPsp = options.maxPsp <= 0 ? 6 : options.maxPsp;
+    double iniJmp = options.iniJmp <= 0 ? .1 : options.iniJmp;
+    int smpSz1 = options.smpSz1 <= 0 ? ceil(100 * pow(1.2, nDim)) : options.smpSz1;
+    int smpSz2 = options.smpSz2 <= 0 ? ceil(200 * pow(1.2, nDim)) : options.smpSz2;
+    int vsmpsz = options.vsmpsz <= 0 ? ceil(500 * pow(1.2, nDim)) : options.vsmpsz;
 
     /* MCMC-based Parameter Space Partitioning Algorithm */
 
@@ -368,6 +373,5 @@ PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options opt
               << numTrials << " trials) ELASPED.\n"
               "=================================================================\n");
 
-    return { std::move(resultPatterns), std::move(resultXs),
-             std::move(resultXMean), std::move(resultXCovMat) };
+    return { resultPatterns, resultXs, resultXMean, resultXCovMat };
 }
