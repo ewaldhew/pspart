@@ -6,21 +6,14 @@
 
 #define ERR_UNHANDLED_EXCEPTION -1
 
+#include "common.h"
 #include "buildpart.h"
 #include "psp_mcmc.h"
 
 
 typedef long Fixed;
 
-typedef struct PSP_Handle_
-#ifdef __cplusplus
-{
-    size_t n_dim;
-    PSP_Result psp_regions;
-    KdSVM_InternalPtr kdsvm;
-}
-#endif
-    *PSP_Handle;
+typedef struct PSP_Handle_ *PSP_Handle;
 
 
 #ifdef __cplusplus

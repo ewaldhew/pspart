@@ -16,6 +16,12 @@ static int HandleExceptions() noexcept
 }
 
 
+struct PSP_Handle_ {
+    size_t n_dim;
+    PSP_Result psp_regions;
+    PSP_Memory memory;
+};
+
 using Point_Fixed = Eigen::VectorX<Fixed>;
 
 static inline
@@ -125,8 +131,7 @@ int PSP_Build_Partition_KdSVM(PSP_Handle handle,
         return EINVAL;
 
     try {
-        handle->kdsvm = build_kdsvm(handle->psp_regions);
-        *tree = transform_kdsvm(handle->kdsvm);
+        *tree = build_kdsvm(handle->psp_regions, handle->memory);
     } catch (...) {
         return HandleExceptions();
     }

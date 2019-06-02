@@ -4,6 +4,15 @@
 #include "buildpart_kdsvm.h"
 
 
+struct KdSVM_Internal : Node_Internal {
+    using Node_Internal::Node_Internal;
+    PSP_KdSVMTree_Data data;
+    svm_problem problem;
+
+    ~KdSVM_Internal();
+};
+using KdSVM_InternalPtr = std::shared_ptr<KdSVM_Internal>;
+
 KdSVM_Internal::~KdSVM_Internal()
 {
     svm_destroy_param(&data.model->param);
@@ -25,7 +34,7 @@ static inline
 KdSVM_InternalPtr KdSVM_InternalPtr_Make(KdSVM_InternalPtr left,
                                          KdSVM_InternalPtr right)
 {
-    return KdSVM_InternalPtr(new KdSVM_Internal{ std::move(left), std::move(right) });
+    return std::make_shared<KdSVM_Internal>(left, right);
 }
 
 static inline
@@ -39,12 +48,12 @@ struct svm_model* build_svm(PSP_Result const& regions,
 
     svm_parameter param = {};
     param.kernel_type = POLY;
-	param.degree = 2;
+    param.degree = 2;
     param.gamma = 1.0 / dim;
-	param.cache_size = 100;
-	param.C = 1;
-	param.eps = 1e-3;
-	param.shrinking = 1;
+    param.cache_size = 100;
+    param.C = 1;
+    param.eps = 1e-3;
+    param.shrinking = 1;
 
     int num_points = 0;
     for (auto it = begin; it < end; it++) {
@@ -114,18 +123,20 @@ KdSVM_InternalPtr build_kdsvm_internal(PSP_Result const& regions,
         right = build_kdsvm_internal(regions, mid, end, dim + 1);
     }
 
-    KdSVM_InternalPtr result = KdSVM_InternalPtr_Make(std::move(left), std::move(right));
+    KdSVM_InternalPtr result = KdSVM_InternalPtr_Make(left, right);
     result->data = data;
     result->problem = problem;
 
     return result;
 }
 
-PSP_KdSVMTree transform_kdsvm(KdSVM_InternalPtr const& tree)
+PSP_KdSVMTree transform_kdsvm(Node_InternalPtr const& kdsvm)
 {
-    if (tree == nullptr) {
+    if (kdsvm == nullptr) {
         return NULL;
     }
+
+    KdSVM_InternalPtr tree = std::static_pointer_cast<KdSVM_Internal>(kdsvm);
 
     PSP_KdSVMTree result = new PSP_KdSVMTreeRec;
     result->data = tree->data;
@@ -134,10 +145,13 @@ PSP_KdSVMTree transform_kdsvm(KdSVM_InternalPtr const& tree)
     return result;
 }
 
-KdSVM_InternalPtr build_kdsvm(PSP_Result data)
+PSP_KdSVMTree build_kdsvm(PSP_Result data,
+                          PSP_Memory memory)
 {
     std::vector<size_t> indices(data.patterns.size());
     std::iota(std::begin(indices), std::end(indices), 0);
 
-    return build_kdsvm_internal(data, std::begin(indices), std::end(indices));
+    memory->kdsvm = build_kdsvm_internal(data, std::begin(indices), std::end(indices));
+
+    return transform_kdsvm(memory->kdsvm);
 }
