@@ -94,6 +94,11 @@ struct Regions {
     }
 };
 
+size_t nDim(PSP_Result const& psp_result)
+{
+    return psp_result.xMean.front().rows();
+}
+
 PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options options)
 {
     std::default_random_engine generator(TIME_NOW);

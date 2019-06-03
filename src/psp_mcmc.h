@@ -48,6 +48,7 @@ struct PSP_Result {
     std::vector<Eigen::MatrixXd> xCovMat;
 };
 
+size_t nDim(PSP_Result const& psp_result);
 
 PSP_Result psp_mcmc(Model model, Eigen::MatrixXd x0, Eigen::MatrixX2d xBounds, PSP_Options options = PSP_Options());
 #endif

@@ -6,21 +6,14 @@
 
 #define ERR_UNHANDLED_EXCEPTION -1
 
-#ifdef __cplusplus
+#include "common.h"
+#include "buildpart.h"
 #include "psp_mcmc.h"
-#endif
 
 
 typedef long Fixed;
 
-typedef struct PSP_Handle_
-#ifdef __cplusplus
-{
-    size_t n_dim;
-    PSP_Result psp_regions;
-}
-#endif
-    *PSP_Handle;
+typedef struct PSP_Handle_ *PSP_Handle;
 
 
 #ifdef __cplusplus
@@ -48,6 +41,9 @@ int PSP_Get_Regions(PSP_Handle handle,
                     Fixed *max_coords,
                     PSP_Options options,
                     PSP_Result_Mode result_mode);
+
+int PSP_Build_Partition_KdSVM(PSP_Handle handle,
+                              PSP_KdSVMTree* tree);
 
 #ifdef __cplusplus
 }
