@@ -1,3 +1,4 @@
+#include "debug.h"
 #include "pspart.h"
 
 
@@ -140,6 +141,22 @@ int PSP_Build_Partition_KdSVM(PSP_Handle handle,
     }
 
     return 0;
+}
+
+
+extern "C"
+void psp_dump_points(PSP_Handle handle)
+{
+#ifdef DEBUG
+    for (size_t i = 0; i < handle->psp_regions.patterns.size(); i++) {
+        std::cout << handle->psp_regions.patterns[i] << ' '
+                  << handle->psp_regions.xs[i].size() << '\n'
+                  << unmap_coord(handle->psp_regions.xMean[i]).transpose() << '\n';
+        for (auto & x : handle->psp_regions.xs[i]) {
+            std::cout << unmap_coord(x).transpose() << '\n';
+        }
+    }
+#endif
 }
 
 

@@ -91,6 +91,19 @@ int PSP_Get_Regions(PSP_Handle handle,
 int PSP_Build_Partition_KdSVM(PSP_Handle handle,
                               PSP_KdSVMTree* tree);
 
+/* for debug purposes */
+/**
+ * Outputs points to stdout in the following format:
+ *
+ * <pattern> <n = no. of points sampled>
+ * <average of points>
+ * <point 1>
+ * ...
+ * <point n>
+ * <pattern> ...
+ */
+void psp_dump_points(PSP_Handle handle);
+
 #ifdef __cplusplus
 }
 #endif
