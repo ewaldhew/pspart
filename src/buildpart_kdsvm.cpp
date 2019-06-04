@@ -49,7 +49,7 @@ struct svm_model* build_svm(PSP_Result const& regions,
     svm_parameter param = {};
     param.kernel_type = POLY;
     param.degree = 2;
-    param.gamma = 1.0 / dim;
+    param.gamma = 1.0;
     param.cache_size = 100;
     param.C = 1;
     param.eps = 1e-3;
@@ -75,7 +75,7 @@ struct svm_model* build_svm(PSP_Result const& regions,
             Eigen::Map<Point>(node.values, dim) = point;
 
             problem->x[i] = node;
-            problem->y[i] = it < mid ? -1 : 1;
+            problem->y[i] = it < mid ? 1 : -1;
             i++;
         }
     }
@@ -91,7 +91,7 @@ static inline
 KdSVM_InternalPtr build_kdsvm_internal(PSP_Result const& regions,
                                        std::vector<size_t>::iterator begin,
                                        std::vector<size_t>::iterator end,
-                                       size_t dim = 0)
+                                       size_t dim_ = 0)
 {
     PSP_KdSVMTree_Data data;
     KdSVM_InternalPtr left, right;
@@ -107,8 +107,27 @@ KdSVM_InternalPtr build_kdsvm_internal(PSP_Result const& regions,
         left = KdSVM_InternalPtr_Make();
         right = KdSVM_InternalPtr_Make();
     } else {
+#if 1
         // select dimension - simply cycle it here
-        size_t dim = dim % nDim(regions);
+        size_t dim = dim_ % nDim(regions);
+#else
+        // select dimension - find the longest bounding box edge
+        size_t dim;
+        double max_range = 0;
+
+        for (int i = 0; i < nDim(regions); i++) {
+            auto minmax = std::minmax_element(regions.xMean.begin(),
+                                              regions.xMean.end(),
+                                              [i](Point const &lhs, Point const &rhs)
+                                              { return lhs[i] < rhs[i]; });
+
+            double range = (*minmax.second)[i] - (*minmax.first)[i];
+            if (max_range < range) {
+                max_range = range;
+                dim = i;
+            }
+        }
+#endif
 
         // find median of points in the chosen dimension
         auto mid = begin + (end - begin) / 2;
