@@ -6,9 +6,13 @@ static int HandleExceptions() noexcept
 {
     try { throw; }
 
-    catch (const std::bad_alloc &)
+    catch (std::bad_alloc const&)
     {
         return ENOMEM;
+    }
+    catch (std::invalid_argument const&)
+    {
+        return EINVAL;
     }
     catch (...)
     {
@@ -20,6 +24,7 @@ static int HandleExceptions() noexcept
 struct PSP_Handle_ {
     size_t n_dim;
     PSP_Result psp_regions;
+    svm_parameter* svm_params;
     PSP_Memory memory;
 };
 
@@ -125,6 +130,19 @@ int PSP_Get_Regions(PSP_Handle handle,
     return 0;
 }
 
+
+extern "C"
+int PSP_Configure_SVM(PSP_Handle handle,
+                      struct svm_parameter* params)
+{
+    if (!handle)
+        return EINVAL;
+
+    handle->svm_params = params;
+
+    return 0;
+}
+
 extern "C"
 int PSP_Build_Partition_KdSVM(PSP_Handle handle,
                               PSP_KdSVMTree* tree)
@@ -135,7 +153,25 @@ int PSP_Build_Partition_KdSVM(PSP_Handle handle,
     try {
         if (!handle->memory)
             handle->memory = new PSP_MemoryRec{};
-        *tree = build_kdsvm(handle->psp_regions, handle->memory);
+        *tree = build_kdsvm(handle->psp_regions, handle->svm_params, handle->memory);
+    } catch (...) {
+        return HandleExceptions();
+    }
+
+    return 0;
+}
+
+extern "C"
+int PSP_Build_Partition_MCSVM(PSP_Handle handle,
+                              PSP_MCSVM* node)
+{
+    if (!handle || !node)
+        return EINVAL;
+
+    try {
+        if (!handle->memory)
+            handle->memory = new PSP_MemoryRec{};
+        *node = build_mcsvm(handle->psp_regions, handle->svm_params, handle->memory);
     } catch (...) {
         return HandleExceptions();
     }
@@ -148,6 +184,7 @@ extern "C"
 void psp_dump_points(PSP_Handle handle)
 {
 #ifdef DEBUG
+    std::cout << "Sampled points dump:\n";
     for (size_t i = 0; i < handle->psp_regions.patterns.size(); i++) {
         std::cout << handle->psp_regions.patterns[i] << ' '
                   << handle->psp_regions.xs[i].size() << '\n'

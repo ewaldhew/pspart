@@ -82,6 +82,33 @@ int PSP_Get_Regions(PSP_Handle handle,
                     PSP_Result_Mode result_mode);
 
 /**
+ * Configures the next SVM instance to be run. The settings are persistent
+ * between calls. If this function is not used before starting an SVM
+ * optimization, the following default values will be used:
+ *
+ * struct svm_parameter
+ * {
+ *   int svm_type = NU_SVC;
+ *   int kernel_type = POLY;
+ *   int degree = 3;           // for poly
+ *   double gamma = 100.0;     // for poly/rbf/sigmoid
+ *   double coef0 = 0.0;       // for poly/sigmoid
+ *   double nu = 1e-6;         // for NU_SVC, ONE_CLASS, and NU_SVR
+ *   double C = 0.0;           // for C_SVC, EPSILON_SVR, and NU_SVR
+ *   int nr_weight = 0;        // for C_SVC
+ *   int *weight_label = NULL; // for C_SVC
+ *   double* weight = NULL;    // for C_SVC
+ *   double p = 0.0;           // (unused) for EPSILON_SVR
+ *   double cache_size = 100;  // in MB
+ *   double eps = 1e-3;        // stopping criteria
+ *   int shrinking = 1;        // use the shrinking heuristics
+ *   int probability = 0;      // (unused) do probability estimates
+ * };
+ */
+int PSP_Configure_SVM(PSP_Handle handle,
+                      struct svm_parameter* params);
+
+/**
  * Builds a partition of the space according to the sampled regions. Must be
  * called only after using `PSP_Get_Regions`.
  *
@@ -90,6 +117,16 @@ int PSP_Get_Regions(PSP_Handle handle,
  */
 int PSP_Build_Partition_KdSVM(PSP_Handle handle,
                               PSP_KdSVMTree* tree);
+
+/**
+ * Builds a single multi-class SVM instance according to the sampled regions.
+ * Must be called only after using `PSP_Get_Regions`.
+ *
+ * This method creates a single node which contains the multi-class SVM model,
+ * using a one-against-one strategy.
+ */
+int PSP_Build_Partition_MCSVM(PSP_Handle handle,
+                              PSP_MCSVM* node);
 
 /* for debug purposes */
 /**

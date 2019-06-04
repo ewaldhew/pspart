@@ -22,6 +22,7 @@ using Node_InternalPtr = std::shared_ptr<Node_Internal>;
 
 typedef struct PSP_MemoryRec {
     Node_InternalPtr kdsvm;
+    Node_InternalPtr mcsvm;
 } *PSP_Memory;
 
 extern "C"

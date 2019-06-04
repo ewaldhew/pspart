@@ -26,7 +26,7 @@ typedef struct PSP_KdSVMTreeRec_ {
 }
 
 
-PSP_KdSVMTree build_kdsvm(PSP_Result data, PSP_Memory memory);
+PSP_KdSVMTree build_kdsvm(PSP_Result data, svm_parameter const* param, PSP_Memory memory);
 #endif
 
 #endif

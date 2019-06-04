@@ -3250,7 +3250,10 @@ void svm_free_and_destroy_model(svm_model** model_ptr_ptr)
 void svm_destroy_param(svm_parameter* param)
 {
 	free(param->weight_label);
+	param->weight_label = NULL;
+
 	free(param->weight);
+	param->weight = NULL;
 }
 
 const char *svm_check_parameter(const svm_problem *prob, const svm_parameter *param)
