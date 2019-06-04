@@ -99,6 +99,15 @@ size_t nDim(PSP_Result const& psp_result)
     return psp_result.xMean.front().rows();
 }
 
+/**
+ * An implementation of the Markov Chain Monte Carlo Parameter Space
+ * Partitioning algorithm described by Pitt, Kim, Navarro, and Myung (2006).
+ * Ported from the MATLAB code provided by the authors, retrived from
+ * https://faculty.psy.ohio-state.edu/myung/personal/psp.html.
+ *
+ * MATLAB code authored by Woojae Kim, Department of Psychology, Ohio State
+ * University   $Revision: 3.0 $  $Date: 2005/07/19 $
+ */
 PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options options)
 {
     std::default_random_engine generator(TIME_NOW);

@@ -19,3 +19,34 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+*** 3rd Party Code ***
+Some portions of this software are licensed under separate terms as stated below.
+Full license notices can be found in the respective files listed.
+
+***
+LIBSVM
+Files: src/svm.{h,cpp}
+
+BSD-3 License
+
+Copyright (c) 2000-2009 Chih-Chung Chang and Chih-Jen Lin.
+
+***
+Eigen
+Files: eigen-git-mirror/* (Git Submodule)
+
+MPL2 License
+
+
+*** References ***
+The following sources were consulted in the implementation of algorithms.
+
+Mark A. Pitt, Woojae Kim, Daniel J. Navarro, and Jay I. Myung. 2006. Global
+model analysis by parameter space partitioning. In Psychological Review 113, no.
+1 (2006): 57. DOI:https://doi.org/10.1037/0033-295X.113.1.57
+
+Parameter Space Partitioning: A Markov chain Monte Carlo Technique To Analyze A
+Model's Global Behavior. Retrieved from
+https://faculty.psy.ohio-state.edu/myung/personal/psp.html.
