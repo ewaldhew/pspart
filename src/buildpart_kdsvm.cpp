@@ -130,6 +130,7 @@ KdSVM_InternalPtr build_kdsvm_internal(PSP_Result const& regions,
     return result;
 }
 
+static inline
 PSP_KdSVMTree transform_kdsvm(Node_InternalPtr const& kdsvm)
 {
     if (kdsvm == nullptr) {

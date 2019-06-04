@@ -72,6 +72,7 @@ PSP_Handle PSP_New(size_t dim)
 extern "C"
 void PSP_Close(PSP_Handle handle)
 {
+    delete handle->memory;
     delete handle;
 }
 
@@ -131,6 +132,8 @@ int PSP_Build_Partition_KdSVM(PSP_Handle handle,
         return EINVAL;
 
     try {
+        if (!handle->memory)
+            handle->memory = new PSP_MemoryRec{};
         *tree = build_kdsvm(handle->psp_regions, handle->memory);
     } catch (...) {
         return HandleExceptions();
