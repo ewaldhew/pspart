@@ -26,4 +26,6 @@ int main()
     Fixed xm[4] = { -65536,-65536,-65536,-65536 };
     Fixed xM[4] = { 65536,65536,65536,65536 };
     PSP_Get_Regions(hn, &cb, 2, x0, xm, xM, {}, PSP_RESULT_OVERWRITE);
+    PSP_Get_Regions(hn, &cb, 2, x0, xm, xM, {}, PSP_RESULT_APPEND);
+    PSP_Get_Regions(hn, &cb, 2, x0, xm, xM, {}, PSP_RESULT_COMBINE);
 }

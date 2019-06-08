@@ -35,7 +35,8 @@ typedef struct PSP_Options_ {
 
 typedef enum PSP_Result_Mode_ {
     PSP_RESULT_OVERWRITE,
-    PSP_RESULT_APPEND
+    PSP_RESULT_APPEND,
+    PSP_RESULT_COMBINE  //XXX: Only correctly combines the lists of sampled points!
 } PSP_Result_Mode;
 
 #ifdef __cplusplus

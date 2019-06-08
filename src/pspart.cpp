@@ -108,7 +108,7 @@ int PSP_Get_Regions(PSP_Handle handle,
         Eigen::MatrixX2d xb(handle->n_dim, 2);
         xb << map_coord(handle, min_coords), map_coord(handle, max_coords);
 
-        PSP_Result result = psp_mcmc(model, x0, xb, options);
+        PSP_Result const& result = psp_mcmc(model, x0, xb, options);
 
         switch (result_mode) {
         default:
@@ -121,6 +121,39 @@ int PSP_Get_Regions(PSP_Handle handle,
             append(handle->psp_regions.xs, result.xs);
             append(handle->psp_regions.xMean, result.xMean);
             append(handle->psp_regions.xCovMat, result.xCovMat);
+            break;
+
+        case PSP_RESULT_COMBINE:
+        {
+            std::vector<size_t> idxs(result.patterns.size());
+            std::transform(result.patterns.begin(), result.patterns.end(),
+                           idxs.begin(),
+                           [handle](Pattern const& ptn) {
+                               auto it = std::find(handle->psp_regions.patterns.rbegin(),
+                                                   handle->psp_regions.patterns.rend(),
+                                                   ptn);
+                               return handle->psp_regions.patterns.rend() - it - 1;
+                           });
+
+            for (int i = 0; i < result.patterns.size(); i++) {
+                int idx = idxs[i];
+
+                if (idx == -1) {
+                    handle->psp_regions.patterns.push_back(result.patterns[i]);
+                    handle->psp_regions.xs.push_back(result.xs[i]);
+                    handle->psp_regions.xMean.push_back(result.xMean[i]);
+                    handle->psp_regions.xCovMat.push_back(result.xCovMat[i]);
+                } else {
+                    int a = handle->psp_regions.xs[idx].size();
+                    int b = result.xs[i].size();
+                    Point x = handle->psp_regions.xMean[idx];
+                    Point y = result.xMean[i];
+
+                    append(handle->psp_regions.xs[idx], result.xs[i]);
+                    handle->psp_regions.xMean[idx] = (a*x + b*y) / (a + b);
+                }
+            }
+        }
             break;
         }
     } catch (...) {
