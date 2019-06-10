@@ -120,7 +120,7 @@ PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options opt
     if (x0.rows() != xBounds.rows()) {
         throw std::invalid_argument("Dimension mismatch.");
     }
-    if ((xRange.array() <= 0).any()) {
+    if ((xRange.array() < 0).any()) {
         throw std::invalid_argument("Invalid bounds.");
     }
     if (x0.size() == 0 || ( x0.array() < xMin.replicate(1, x0.cols()).array()

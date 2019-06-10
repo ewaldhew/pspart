@@ -22,9 +22,9 @@ int main()
 {
     PSP_Handle hn = PSP_New(4);
     PSP_Sampling_CallbackRec cb{hn, sampl};
-    Fixed x0[8] = { 0,0,0,0, 65536,65536,65536,65536 };
-    Fixed xm[4] = { -65536,-65536,-65536,-65536 };
-    Fixed xM[4] = { 65536,65536,65536,65536 };
+    Fixed x0[8] = { 12,0,0,0, 12,65536,65536,65536 };
+    Fixed xm[4] = { 12,-65536,-65536,-65536 };
+    Fixed xM[4] = { 12,65536,65536,65536 };
     PSP_Get_Regions(hn, &cb, 2, x0, xm, xM, {}, PSP_RESULT_OVERWRITE);
     PSP_Get_Regions(hn, &cb, 2, x0, xm, xM, {}, PSP_RESULT_APPEND);
     PSP_Get_Regions(hn, &cb, 2, x0, xm, xM, {}, PSP_RESULT_COMBINE);

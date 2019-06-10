@@ -8,14 +8,17 @@ static int HandleExceptions() noexcept
 
     catch (std::bad_alloc const&)
     {
+        fprintf(stderr, "PSP: Out of memory.\n");
         return ENOMEM;
     }
-    catch (std::invalid_argument const&)
+    catch (std::invalid_argument const& err)
     {
+        fprintf(stderr, "PSP: Invalid argument: %s.\n", err.what());
         return EINVAL;
     }
     catch (...)
     {
+        fprintf(stderr, "PSP: Unknown error.\n");
         return ERR_UNHANDLED_EXCEPTION;
     }
 }
