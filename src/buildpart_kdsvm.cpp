@@ -16,13 +16,16 @@ using KdSVM_InternalPtr = std::shared_ptr<KdSVM_Internal>;
 
 KdSVM_Internal::~KdSVM_Internal()
 {
-    svm_destroy_param(&data.model->param);
-    svm_free_and_destroy_model(&data.model);
-    delete[] problem.y;
-    for (int i = 0; i < problem.l; i++) {
-        delete[] problem.x[i].values;
+    if (left != nullptr || right != nullptr) {
+        svm_destroy_param(&data.model->param);
+        svm_free_and_destroy_model(&data.model);
+        delete[] problem.y;
+        for (int i = 0; i < problem.l; i++)
+        {
+            delete[] problem.x[i].values;
+        }
+        delete[] problem.x;
     }
-    delete[] problem.x;
 }
 
 static inline

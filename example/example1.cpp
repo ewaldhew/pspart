@@ -28,4 +28,5 @@ int main()
     PSP_Get_Regions(hn, &cb, 2, x0, xm, xM, {}, PSP_RESULT_OVERWRITE);
     PSP_Get_Regions(hn, &cb, 2, x0, xm, xM, {}, PSP_RESULT_APPEND);
     PSP_Get_Regions(hn, &cb, 2, x0, xm, xM, {}, PSP_RESULT_COMBINE);
+    PSP_Close(hn);
 }
