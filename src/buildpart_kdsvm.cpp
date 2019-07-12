@@ -42,6 +42,26 @@ KdSVM_InternalPtr KdSVM_InternalPtr_Make(KdSVM_InternalPtr left,
 }
 
 static inline
+bool check_model(svm_model* model,
+                 double coef_max)
+{
+    if (!model)
+        return false;
+
+    if (coef_max <= 0)
+        return true;
+
+    if (model->rho[0] < -coef_max || model->rho[0] > coef_max)
+        return false;
+
+    for (int j = 0; j < model->l; j++)
+        if (model->sv_coef[0][j] < -coef_max || model->sv_coef[0][j] > coef_max)
+            return false;
+
+    return true;
+}
+
+static inline
 struct svm_model* build_svm(PSP_Result const& regions,
                             std::vector<size_t>::const_iterator begin,
                             std::vector<size_t>::const_iterator mid,
@@ -58,6 +78,9 @@ struct svm_model* build_svm(PSP_Result const& regions,
         DEBUG_LOG(regions.patterns[*it] << " ");
     }
     DEBUG_LOG("}\n");
+
+    svm_model* model = NULL;
+    int num_retries = 0;
 
     size_t dim = nDim(regions);
 
@@ -104,7 +127,27 @@ struct svm_model* build_svm(PSP_Result const& regions,
     if (error_msg)
         throw std::runtime_error(error_msg);
 
-    return svm_train(problem, &param);
+    do {
+        if (model) {
+            fprintf(stderr, "build_svm: Coefficients too large, retrying...\n");
+
+            if (num_retries == 0) {
+                param.svm_type = C_SVC;
+                param.C = param.coef_max;
+            } else {
+                param.C = param.C / 10;
+            }
+        }
+
+        model = svm_train(problem, &param);
+
+        if (num_retries > param.max_retries) {
+            fprintf(stderr, "build_svm: Max retry count reached, giving up..\n");
+            break;
+        }
+    } while (!check_model(model, param.coef_max));
+
+    return model;
 }
 
 static inline

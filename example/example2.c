@@ -26,6 +26,9 @@ int main()
     Fixed xM[DIM] = { 65536,65536,65536 };
     PSP_Options options = {0};
     PSP_Get_Regions(hn, &cb, 1, x0, xm, xM, options, PSP_RESULT_APPEND);
+    struct svm_parameter params = {.svm_type=C_SVC, .kernel_type=POLY, .degree=2, .gamma=1.0/DIM, .C=10000,
+      .cache_size=1000, .eps=1e-3};
+    PSP_Configure_SVM(hn, &params);
 #if KD
     PSP_KdSVMTree tree = NULL;
     PSP_Build_Partition_KdSVM(hn, &tree);

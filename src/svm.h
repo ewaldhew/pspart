@@ -94,6 +94,10 @@ struct svm_parameter
 	double p;	/* for EPSILON_SVR */
 	int shrinking;	/* use the shrinking heuristics */
 	int probability; /* do probability estimates */
+
+	/* custom parameters */
+	double coef_max; /* regenerate model if any coefficients exceed this */
+	int max_retries; /* retry the above at most this many times */
 };
 
 //
