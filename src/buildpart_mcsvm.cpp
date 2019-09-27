@@ -108,16 +108,22 @@ struct svm_model* build_svm(PSP_Result const& regions,
         if (model) {
             fprintf(stderr, "build_svm: Coefficients too large, retrying...\n");
 
-            if (num_retries) {
-                param.nu = param.nu * 2;
+            if (num_retries == 0) {
+                param.svm_type = NU_SVC;
             }
 
+            param.nu = model->param.nu * 2;
             num_retries++;
         }
 
-        if (num_retries > param.max_retries || param.nu == 1.0) {
-            fprintf(stderr, "build_svm: Max retry count reached, giving up..\n");
-            break;
+        if (num_retries > param.max_retries || param.nu >= 1.0) {
+            param.svm_type = C_SVC;
+            param.C = param.coef_max;
+            model = svm_train(problem, &param);
+            if (!check_model(model, param.coef_max)) {
+                fprintf(stderr, "build_svm: Max retry count reached, giving up..\n");
+                break;
+            }
         }
 
         model = svm_train(problem, &param);
