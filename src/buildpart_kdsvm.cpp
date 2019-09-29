@@ -7,6 +7,7 @@
 
 struct KdSVM_Internal : Node_Internal {
     using Node_Internal::Node_Internal;
+    PSP_KdSVMTree transformed;
     PSP_KdSVMTree_Data data;
     svm_problem problem;
 
@@ -16,6 +17,7 @@ using KdSVM_InternalPtr = std::shared_ptr<KdSVM_Internal>;
 
 KdSVM_Internal::~KdSVM_Internal()
 {
+    delete transformed;
     if (left != nullptr || right != nullptr) {
         svm_destroy_param(&data.model->param);
         svm_free_and_destroy_model(&data.model);
@@ -232,6 +234,7 @@ PSP_KdSVMTree transform_kdsvm(Node_InternalPtr const& kdsvm)
     result->data = tree->data;
     result->node.left = (PSP_Node)transform_kdsvm(tree->left);
     result->node.right = (PSP_Node)transform_kdsvm(tree->right);
+    tree->transformed = result;
     return result;
 }
 

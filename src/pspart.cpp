@@ -81,6 +81,8 @@ PSP_Handle PSP_New(size_t dim)
 extern "C"
 void PSP_Close(PSP_Handle handle)
 {
+    if (!handle)
+        return;
     delete handle->memory;
     delete handle;
 }

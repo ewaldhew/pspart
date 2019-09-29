@@ -6,6 +6,7 @@
 
 struct MCSVM_Internal : Node_Internal {
     using Node_Internal::Node_Internal;
+    PSP_MCSVM transformed;
     svm_model* model;
     svm_problem problem;
 
@@ -15,6 +16,7 @@ using MCSVM_InternalPtr = std::shared_ptr<MCSVM_Internal>;
 
 MCSVM_Internal::~MCSVM_Internal()
 {
+    delete transformed;
     svm_destroy_param(&model->param);
     svm_free_and_destroy_model(&model);
     delete[] problem.y;
@@ -158,6 +160,7 @@ PSP_MCSVM transform_mcsvm(Node_InternalPtr const& mcsvm)
 
     PSP_MCSVM result = new PSP_MCSVMRec{};
     result->model = node->model;
+    node->transformed = result;
     return result;
 }
 

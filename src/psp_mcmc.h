@@ -10,6 +10,9 @@
 #include <functional>
 
 #define EIGEN_NO_AUTOMATIC_RESIZING
+#define EIGEN_MALLOC_ALREADY_ALIGNED 0
+#define EIGEN_DONT_VECTORIZE
+#define EIGEN_MAX_ALIGN_BYTES 0
 #define EIGEN_MPL2_ONLY
 #include <Eigen/Core>
 
