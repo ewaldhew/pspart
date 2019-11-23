@@ -6,6 +6,7 @@
 #ifdef __cplusplus
 #include "common.h"
 #include "psp_mcmc.h"
+#include "buildpart_common.h"
 
 
 extern "C"

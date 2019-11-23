@@ -5,6 +5,7 @@ libpspart_la_SOURCES = \
   common.h debug.h \
   psp_mcmc.cpp psp_mcmc.h \
   buildpart.h \
+  buildpart_common.cpp buildpart_common.h \
   buildpart_kdsvm.cpp buildpart_kdsvm.h \
   buildpart_mcsvm.cpp buildpart_mcsvm.h \
   svm.cpp svm.h \
