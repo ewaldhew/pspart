@@ -43,6 +43,9 @@ struct svm_model* train_svm(const struct svm_problem* problem,
 
             param.nu = model->param.nu * 2;
             num_retries++;
+        } else if (param.min_SVs) {
+            double min_nu = (double)param.min_SVs / problem->l;
+            param.nu = param.nu < min_nu ? param.nu : min_nu;
         }
 
         if (num_retries > param.max_retries || param.nu >= 1.0) {

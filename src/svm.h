@@ -98,6 +98,7 @@ struct svm_parameter
 	/* custom parameters */
 	double coef_max; /* regenerate model if any coefficients exceed this */
 	int max_retries; /* retry the above at most this many times */
+	int min_SVs; /* the starting number of SVs to attempt training the model with */
 };
 
 //
