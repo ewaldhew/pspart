@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <errno.h>
 
+#define PSP_ERR_TOO_MANY_PATTERNS 3000
 #define ERR_UNHANDLED_EXCEPTION -1
 
 #include "common.h"

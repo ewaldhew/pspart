@@ -22,6 +22,13 @@ using Pattern = size_t;
 using Model = std::function<Pattern(Point)>;
 
 
+namespace PSP {
+    struct too_many_patterns : public std::exception {
+        using std::exception::exception;
+    };
+};
+
+
 extern "C"
 {
 #endif
@@ -34,6 +41,7 @@ typedef struct PSP_Options_ {
     double smpSz2;
     double vsmpsz;
     bool accurateVolEst;
+    unsigned int maxPatterns;
 } PSP_Options;
 
 typedef enum PSP_Result_Mode_ {

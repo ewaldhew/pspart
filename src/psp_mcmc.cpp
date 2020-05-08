@@ -196,18 +196,19 @@ PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options opt
             if ((currPtn == regions.patterns[regionIdx])) {
                 regions.xs[regionIdx].push_back(y);
                 regions.alps[regionIdx]++;
-            } else {
-                if (foundPatterns.insert(currPtn).second) {
-                    regions.push_back({ y, currPtn });
-                    searchTime.push_back({ TIME_NOW - t0, numTrials });
+            } else if (foundPatterns.size() > options.maxPatterns) {
+                /* exit if there are too many patterns */
+                throw PSP::too_many_patterns();
+            } else if (foundPatterns.insert(currPtn).second) {
+                regions.push_back({ y, currPtn });
+                searchTime.push_back({ TIME_NOW - t0, numTrials });
 
-                    iterCount1 = iterCount2 = 0;
-                    cnt1 = cnt2 = TIME_NOW;
+                iterCount1 = iterCount2 = 0;
+                cnt1 = cnt2 = TIME_NOW;
 
-                    DEBUG_LOG("New data pattern found: " << currPtn << "\n");
-                    DEBUG_LOG("PSP, Total elapsed time: " <<
-                              searchTime.back().first << " secs (" << numTrials << " trials)\n");
-                }
+                DEBUG_LOG("New data pattern found: " << currPtn << "\n");
+                DEBUG_LOG("PSP, Total elapsed time: " <<
+                          searchTime.back().first << " secs (" << numTrials << " trials)\n");
             }
         }
 

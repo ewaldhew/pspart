@@ -16,6 +16,11 @@ static int HandleExceptions() noexcept
         fprintf(stderr, "PSP: Invalid argument: %s.\n", err.what());
         return EINVAL;
     }
+    catch (PSP::too_many_patterns const& err)
+    {
+        fprintf(stderr, "PSP: Too many patterns found in model.\n");
+        return PSP_ERR_TOO_MANY_PATTERNS;
+    }
     catch (...)
     {
         fprintf(stderr, "PSP: Unknown error.\n");
