@@ -158,9 +158,10 @@ PSP_Result psp_mcmc(Model model, MatrixXd x0, MatrixX2d xBounds, PSP_Options opt
             regions.push_back({ y, currPtn });
             searchTime.push_back({ TIME_NOW - t0, numTrials });
 
-            DEBUG_LOG("New data pattern found: " << currPtn << "\n");
+            DEBUG_LOG("New data pattern found: " << currPtn <<
+                      " at: " << y.transpose() << "\n");
             DEBUG_LOG("w/ supplied starting point(s), Total elapsed time: " <<
-                searchTime.back().first << " secs (" << numTrials << " trials)\n");
+                      searchTime.back().first << " secs (" << numTrials << " trials)\n");
         }
     }
 

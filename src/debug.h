@@ -1,9 +1,9 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#ifdef DEBUG
+#if DEBUG
 #include <iostream>
-#define DEBUG_LOG(str) do { std::cout << str; } while (false)
+#define DEBUG_LOG(str) do { std::cerr << str; } while (false)
 #else
 #define DEBUG_LOG(str) do { } while (false)
 #endif

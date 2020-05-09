@@ -1,3 +1,4 @@
+#include <cstddef>
 #include "buildpart_common.h"
 
 static inline
@@ -35,7 +36,7 @@ struct svm_model* train_svm(const struct svm_problem* problem,
 
     do {
         if (model) {
-            fprintf(stderr, "build_svm: Coefficients too large, retrying...\n");
+            DEBUG_LOG("build_svm: Coefficients too large, retrying...\n");
 
             if (num_retries == 0) {
                 param.svm_type = NU_SVC;
@@ -45,6 +46,7 @@ struct svm_model* train_svm(const struct svm_problem* problem,
             num_retries++;
         } else if (param.min_SVs) {
             double min_nu = (double)param.min_SVs / problem->l;
+            DEBUG_LOG("build_svm: Starting nu value: " << min_nu << '\n');
             param.nu = param.nu < min_nu ? param.nu : min_nu;
         }
 
@@ -53,7 +55,7 @@ struct svm_model* train_svm(const struct svm_problem* problem,
             param.C = param.coef_max;
             model = svm_train(problem, &param);
             if (!check_model(model, param.coef_max)) {
-                fprintf(stderr, "build_svm: Max retry count reached, giving up..\n");
+                DEBUG_LOG("build_svm: Max retry count reached, giving up..\n");
                 break;
             }
         }
